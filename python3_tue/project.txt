@@ -1,0 +1,44 @@
+
+'''
+Google dino game - Mark Dai
+Controls - up/down - jump and crouch
+Goal - survive as long as possible
+Death - hitting cacti and birds
+
+microsoft edge surf game - Mike Dai - Chosen!
+Controls - mouse based but only works in 3 directions
+Goal - survive as long as possible
+Death - getting stopped by the yeti
+
+kirby minigames
+Controls - one button or mouse click
+Goal - click/hit button as fast as possible with a twist
+Death - not being fast enough
+
+
+'''
+
+'''
+microsoft edge surf game
+Controls - mouse based but only works in 3 directions
+    if mouse is in a specific quadrant the players moves in that area
+    if bottom-left == move the player down and to the left
+    if bottom-right == move the player down and to the right
+    if straight down == move the player straight down
+
+    increases speed after a while
+
+Goal - survive as long as possible
+    Collect points and powerups? along the way for a higher score
+    Highscore based on points and how long you lasted
+
+Death - getting stopped by the yeti or hitting obstacles
+    theres a yeti that chases after you and you need to go fast
+    But there also obstacles (trees, other people, stuff) that slow you down and hurt you
+
+NEXT CLASS
+First Game - Egg drop game
+Second Game - surf game
+3rd Game - Custtom of your choosing
+
+'''
