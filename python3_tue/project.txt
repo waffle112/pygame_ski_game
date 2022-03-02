@@ -42,3 +42,20 @@ Second Game - surf game
 3rd Game - Custtom of your choosing
 
 '''
+'''
+Space Invaders
+Controls - LEFT/RIGHT SPACE
+    can only move left and right
+    space - shoots a bullet
+
+Goal- kill off all the aliens while avoiding damage from them - survive as a long as possible
+
+Death - aliens reach floor/ player is shot x times
+
+Mechanic - Aliens move horizontally then downwards each time, periodicly shooting an alien bullet
+           Barrier system that has some hp to tank shots
+
+
+
+
+'''

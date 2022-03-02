@@ -29,6 +29,9 @@ green = (0, 255, 0)
 all_sprites = pygame.sprite.Group()
 enemy_sprites = pygame.sprite.Group()
 
+player_images = pygame.image.load('player.png')
+objects_images = pygame.image.load('objects.png')
+
 class player(pygame.sprite.Sprite):
     # make variables to describe what player can do
     def __init__(self):  # constructor or initialize()
@@ -39,8 +42,8 @@ class player(pygame.sprite.Sprite):
         self.hp = 3
         self.boosts = 3
         # create the player rectangle
-        self.image = pygame.Surface([30, 30])
-        self.image.fill(white)
+        self.image = pygame.Surface([23, 49])
+        #self.image.fill(white)
         # self.image = pygame.image.load("basket.png").convert()
         # self.image.set_colorkey((0, 0, 0))
         # get a rectangle hitbox based on the the player image

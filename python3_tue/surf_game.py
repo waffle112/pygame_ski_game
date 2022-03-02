@@ -18,14 +18,19 @@ snow = (220, 220, 220)
 red = (255, 0, 0)
 blue = (0, 0, 255)
 green = (0, 255, 0)
+
 # sprite groups
 all_sprites = pygame.sprite.Group()
 enemy_sprites = pygame.sprite.Group()
 slow_sprites = pygame.sprite.Group()
 power_sprites = pygame.sprite.Group()
 misc_sprites = pygame.sprite.Group()
+
 global_direction = 0
 global_speed = 0
+
+player_images = pygame.image.load('player.png')
+objects_images = pygame.image.load('objects.png')
 
 class player(pygame.sprite.Sprite):
     # make variables to describe what player can do
@@ -37,8 +42,9 @@ class player(pygame.sprite.Sprite):
         self.hp = 3
         self.boosts = 3
         # create the player rectangle
-        self.image = pygame.Surface([30, 30])
-        self.image.fill(white)
+        self.image = player_images.subsurface(pygame.Rect(212, 320, 23, 49))
+        #self.image = pygame.Surface([23, 49])
+        #self.image.fill(white)
         # self.image = pygame.image.load("basket.png").convert()
         # self.image.set_colorkey((0, 0, 0))
         # get a rectangle hitbox based on the the player image
@@ -48,6 +54,7 @@ class player(pygame.sprite.Sprite):
     def update(self):
         #self.handleMovement()
         pass
+
 
     # make methods to have player do somehting
     # movement
@@ -61,20 +68,24 @@ class player(pygame.sprite.Sprite):
         # check if keystate is of a particular button
         # modify what happens to change how the player moves
         if keystate[pygame.K_a]:  # if A was pressed - go downward left x_speed = -speed AND y_speed = speed
-            self.image.fill(red)
+            self.image = player_images.subsurface(pygame.Rect(146, 322, 179-146, 369-322))
+            self.rect = self.image.get_rect(center=(width / 2, height / 2))
             # make everything go up left?
             global_direction = 1
         if keystate[pygame.K_d]:  # if D was pressed
-            self.image.fill(blue)
+            self.image = player_images.subsurface(pygame.Rect(329, 322, 367-329, 369-322))
+            self.rect = self.image.get_rect(center=(width / 2, height / 2))
             # make everything go up right?
             global_direction = -1
         if keystate[pygame.K_w]:  # if W was pressed
-            self.image.fill(black)
+            self.image = player_images.subsurface(pygame.Rect(5, 323, 48-5, 379-323))
+            self.rect = self.image.get_rect(center=(width / 2, height / 2))
             # make everything stop?
             global_speed = 0
             global_direction = 0
         if keystate[pygame.K_s]:  # if S was pressed
-            self.image.fill(green)
+            self.image = player_images.subsurface(pygame.Rect(212, 320, 23, 49))
+            self.rect = self.image.get_rect(center=(width / 2, height / 2))
             # make everything go straight up?
             global_speed = self.speed
             global_direction = 0
@@ -130,6 +141,7 @@ class obstacle(pygame.sprite.Sprite):
             self.rect.x = random.randint(width * -2, width* 2)
 
             self.image.fill(self.color)
+
 
 
 class powerup(pygame.sprite.Sprite):
