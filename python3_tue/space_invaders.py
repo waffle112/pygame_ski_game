@@ -1,12 +1,42 @@
 '''
 Goals:
-    1) make player
+    1) make player - ALMOST DONE
         movement - left/right
         shoot - space
 
-    2) make bullets
-    3) make aliens
+    2) make bullets - almost done
+    3) make aliens - half done
+        need to make aliens shoot bullets too
     4) make barriers?
+        barriers have hp too
+        also barriers show damage as well
+    5) make health system
+        3 pts of hp
+        show at top left of screen - 3 cannons to show hp
+    6) make score system
+        top right of screen
+
+    7) Game repeat
+        game keeps going after all aliens are dead
+        so restart game but increase speed of aliens
+
+    8) modify code to load in images from sprite sheet
+        aliens are 24px by 16px
+        alien1 - 3, 225 -- 36, 225
+        alien2 - 73, 225 -- 106, 225
+        alien3 - 147, 226 -- 179, 226
+
+        bonus alien - 215, 224 (48px by 21px)
+        cannon - 277, 228 (26px by 16px))
+
+        (44 by 32px)
+        barrier1 - 316, 213
+        barrier2 - 373, 211
+        barrier3 - 428, 210
+        barrier4 - 480, 210
+        barrier5 - 480, 265
+
+        explosion - 438, 276
 
 probably make a player class
 then a bullet class
@@ -31,6 +61,7 @@ white = (255, 255, 255)
 clock = pygame.time.Clock()
 all_sprites = pygame.sprite.Group()
 bullet_sprites = pygame.sprite.Group()
+alien_b_sprites = pygame.sprite.Group()
 enemy_sprites = pygame.sprite.Group()
 barrier_sprites = pygame.sprite.Group()
 
@@ -54,6 +85,9 @@ class Player(pygame.sprite.Sprite):
         # initalize speed on x and y axis for sprite
         self.x_speed = 0
         self.y_speed = 0
+
+        #initialize hp
+        self.hp = 3
 
     # update method
     def update(self):
@@ -168,7 +202,7 @@ and one for the enemy
 
 class bullet1(pygame.sprite.Sprite):
 
-    def __init__(self, x, y):
+    def __init__(self, x, y, up=1):
         # call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
 
@@ -186,7 +220,7 @@ class bullet1(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(x, y))
 
         # initalize speed on x and y axis for sprite
-        self.y_speed = 5
+        self.y_speed = up * 5
 
     # update method
     def update(self):
@@ -198,6 +232,7 @@ class bullet1(pygame.sprite.Sprite):
             self.kill()
 
 
+#check which aliens are the farthest aliens on the left side and right side and return them
 def alienSideCheck():
     left = None
     right = None
@@ -210,10 +245,14 @@ def alienSideCheck():
         if e.rect.x > right.rect.x:
             right = e
 
-    print(left.rect.x, right.rect.x)
+    #print(left.rect.x, right.rect.x)
     return left, right
 
-
+def game_over():
+    print("Game Over")
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT: sys.exit()
 def game():
     player = Player()
     all_sprites.add(player)
@@ -233,6 +272,10 @@ def game():
     # create a timed event that tells the enemies to move
     pygame.time.set_timer(pygame.USEREVENT + 1, 1000)
 
+    #create a timed event that tells a random enemy to fire
+    pygame.time.set_timer(pygame.USEREVENT + 3, 800)
+
+    firing_delay = False
     while True:
         clock.tick(60)  # set FPS to 60 FPS
         for event in pygame.event.get():
@@ -240,12 +283,14 @@ def game():
                 pygame.quit()
                 quit()
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                if event.key == pygame.K_SPACE and not firing_delay:
                     # shoot a bullet from the player
                     # spawn a bullet whose x and y == player_rect
                     b = bullet1(player.rect.centerx, player.rect.centery)
                     bullet_sprites.add(b)
                     all_sprites.add(b)
+                    firing_delay = True
+                    pygame.time.set_timer(pygame.USEREVENT + 2, 1000)
 
             if event.type == pygame.USEREVENT + 1:
                 # move the enemies
@@ -256,6 +301,18 @@ def game():
                     enemy_sprites.update("right")
                 pygame.time.set_timer(pygame.USEREVENT + 1, 2000)
 
+            if event.type == pygame.USEREVENT + 2:
+                firing_delay = False
+
+            if event.type == pygame.USEREVENT + 3:
+                #enemy shoots something
+                alien = random.choice(enemy_sprites.sprites())
+                b = bullet1(alien.rect.centerx, alien.rect.centery, -1)
+                alien_b_sprites.add(b)
+                all_sprites.add(b)
+                pygame.time.set_timer(pygame.USEREVENT + 3, 800)
+                pass
+
         all_sprites.update()
 
         # check if bullet in spritegroup collide with enemy_sprites
@@ -264,7 +321,13 @@ def game():
         if hits:
             leftmost, rightmost = alienSideCheck()
 
+        hits = pygame.sprite.spritecollide(player, alien_b_sprites, True)
+        for h in hits:
+            print("player hit ")
+            player.hp -= 1
 
+        if player.hp <= 0:
+            game_over()
 
         # if the alien on the side touches the edge of the game window
         # flip the speed by making it negative
