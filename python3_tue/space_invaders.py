@@ -54,8 +54,12 @@ pygame.init()
 size = width, height = 1000, 800
 screen = pygame.display.set_mode(size)
 
+#colors
 black = (0, 0, 0)
 white = (255, 255, 255)
+
+#fonts
+arial = pygame.font.match_font('arial')
 
 # create variable that handles FPS (frames per sec)
 clock = pygame.time.Clock()
@@ -65,6 +69,8 @@ alien_b_sprites = pygame.sprite.Group()
 enemy_sprites = pygame.sprite.Group()
 barrier_sprites = pygame.sprite.Group()
 
+#sprite sheet
+spritesheet = pygame.image.load('space_invaders.png')
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -88,7 +94,7 @@ class Player(pygame.sprite.Sprite):
 
         #initialize hp
         self.hp = 3
-
+        self.score = 0
     # update method
     def update(self):
         # have to set these values to 0 otherwise sprite
@@ -183,17 +189,18 @@ class Barrier(pygame.sprite.Sprite):
         # initalize speed on x and y axis for sprite
         self.x_speed = 0
         self.y_speed = 0
+        self.hp = 20
+
 
     # update method
     def update(self):
-        # have to set these values to 0 otherwise sprite
-        # will fly off the screen
-        self.x_speed = 0
-        self.y_speed = 0
+        #check if hp is below or at 0 then self.kill
+        if self.hp <= 0:
+            self.kill()
 
 
 '''
-need 2 bullets
+need 2 bullets 
 one for the player 
 and one for the enemy 
 
@@ -231,6 +238,36 @@ class bullet1(pygame.sprite.Sprite):
         if self.rect.bottom <= 0:
             self.kill()
 
+def draw_text(surf, text, size, x, y):
+    font = pygame.font.Font(arial, size)
+    text_surface = font.render(text, True, white)
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (x, y)
+    surf.blit(text_surface, text_rect)
+
+#lives function
+def show_lives(hp):
+    #draw "lives:" + 3 cannons/rects
+    #essnetially, draw/blip rectangles/images onto the game, but because these have no interaction, theres no need to
+    #use update
+    draw_text(screen, "Lives: ", 40, width/15, height/40)
+    image = pygame.Surface([40, 30])
+    image.fill(white)
+    image_rect = image.get_rect()
+    image_rect.x = width/8
+    image_rect.y = height/25
+    for i in range(hp):
+        screen.blit(image, image_rect)
+        image_rect.x += 50
+
+    pass
+
+#score function
+def show_score(score):
+    #draw "score: " + score
+    score = "Score: " + str(score)
+    draw_text(screen, score, 40, width * 4/5, height/40)
+    pass
 
 #check which aliens are the farthest aliens on the left side and right side and return them
 def alienSideCheck():
@@ -317,17 +354,24 @@ def game():
 
         # check if bullet in spritegroup collide with enemy_sprites
         # the true, true is saying delete both bullet and enemy
+        #also check if bullets collided with barrier,
+        hits = pygame.sprite.groupcollide(barrier_sprites, bullet_sprites, False, True)
+        for h in hits:
+            h.hp -= 1
+        hits = pygame.sprite.groupcollide(barrier_sprites, alien_b_sprites, False, True)
+        for h in hits:
+            h.hp -= 1
+
         hits = pygame.sprite.groupcollide(bullet_sprites, enemy_sprites, True, True)
         if hits:
             leftmost, rightmost = alienSideCheck()
+            player.score += 100
 
         hits = pygame.sprite.spritecollide(player, alien_b_sprites, True)
         for h in hits:
             print("player hit ")
             player.hp -= 1
 
-        if player.hp <= 0:
-            game_over()
 
         # if the alien on the side touches the edge of the game window
         # flip the speed by making it negative
@@ -336,7 +380,13 @@ def game():
         screen.fill(black)
         all_sprites.draw(screen)
         enemy_sprites.draw(screen)
+
+        show_lives(player.hp)
+        show_score(player.score)
         pygame.display.flip()
+
+        if player.hp <= 0:
+            game_over()
 
 
 if __name__ == "__main__":
