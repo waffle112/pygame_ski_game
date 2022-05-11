@@ -71,7 +71,7 @@ barrier_sprites = pygame.sprite.Group()
 
 #sprite sheet
 spritesheet = pygame.image.load('space_invaders.png')
-scale = 3
+scale = 2.3
 
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -140,7 +140,7 @@ aliens are 24px by 16px
         alien3 - 147, 226 -- 179, 226
 '''
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self, w, h, x, y):
+    def __init__(self, w, h, x, y, alien):
         # call the parent class (Sprite) constructor
         pygame.sprite.Sprite.__init__(self)
 
@@ -149,8 +149,13 @@ class Enemy(pygame.sprite.Sprite):
 
         # self.image = pygame.Surface([w, h])
         # self.image.fill(white)
-
-        self.image = pygame.transform.scale(spritesheet.subsurface(3, 225, 24, 16), (24*scale, 16*scale))
+        self.alien = alien
+        if self.alien == 0:
+            self.image = pygame.transform.scale(spritesheet.subsurface(3, 225, 24, 16), (24*scale, 16*scale))
+        elif self.alien == 1:
+            self.image = pygame.transform.scale(spritesheet.subsurface(73, 225, 24, 16), (24*scale, 16*scale))
+        elif self.alien == 2:
+            self.image = pygame.transform.scale(spritesheet.subsurface(147, 226, 24, 16), (24*scale, 16*scale))
 
         # self.image = pygame.image.load("basket.png").convert()
         self.image.set_colorkey((0, 0, 0))
@@ -189,10 +194,23 @@ class Enemy(pygame.sprite.Sprite):
             self.handle_movement()
 
         if self.internal:
-            self.image = pygame.transform.scale(spritesheet.subsurface(3, 225, 24, 16), (24*scale, 16*scale))
+            if self.alien == 0:
+                self.image = pygame.transform.scale(spritesheet.subsurface(3, 225, 24, 16), (24*scale, 16*scale))
+            elif self.alien == 1:
+                self.image = pygame.transform.scale(spritesheet.subsurface(73, 225, 24, 16), (24*scale, 16*scale))
+            elif self.alien == 2:
+                self.image = pygame.transform.scale(spritesheet.subsurface(147, 226, 24, 16), (24*scale, 16*scale))
         else:
-            self.image = pygame.transform.scale(spritesheet.subsurface(36, 225, 24, 16), (24*scale, 16*scale))
+            if self.alien == 0:
+                self.image = pygame.transform.scale(spritesheet.subsurface(36, 225, 24, 16), (24*scale, 16*scale))
+            elif self.alien == 1:
+                self.image = pygame.transform.scale(spritesheet.subsurface(106, 225, 24, 16), (24*scale, 16*scale))
+            elif self.alien == 2:
+                self.image = pygame.transform.scale(spritesheet.subsurface(179, 226, 24, 16), (24*scale, 16*scale))
         self.internal = not self.internal
+
+        if self.rect.bottom >= height * .8:
+            game_over()
 '''
         barrier1 - 316, 213
         barrier2 - 373, 211
@@ -422,11 +440,13 @@ def game(win=None, hp = None, newspeed = None):
         speed = 2000
 
     all_sprites.add(player)
+    alien = 0
     for y in range(1, 6):
         for x in range(1, 11):
-            e = Enemy(40, 40, 175 + x * 60, 50 + y * 60)
+            e = Enemy(40, 40, 175 + x * 60, 50 + y * 60, y//2)
             enemy_sprites.add(e)
             #all_sprites.add(e)
+
 
     leftmost, rightmost = alienSideCheck()
 
